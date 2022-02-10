@@ -66,34 +66,42 @@ options(digits = 6)
 
 ``` r
 search_data <- read_rds("startup_search_data.rds")
+
+
+search_data %>% sample_n(20)
 ```
 
-## data to csv
-
-``` r
-months_df <- tibble(month=ymd("2017-12-01")+ months(0:47))
-
-sd_long <- search_data %>% unnest_longer(searches_past_months) 
-
-
-sd_monthly <- sd_long %>% 
-  mutate(month=rep(months_df$month, len=nrow(sd_long)))
-
-sd_monthly %>% 
-  select(keyword, seed, month, search_volume=searches_past_months) %>%
-  write_csv("startup_search_data.csv")
-```
+    ## # A tibble: 20 x 5
+    ##    kw_id keyword               seed          avg_monthly_sear~ searches_past_mo~
+    ##    <int> <chr>                 <chr>                     <dbl> <list>           
+    ##  1 14637 start up cost for cl~ start up cos~                10 <int [48]>       
+    ##  2 11878 most unique startup ~ unique start~                10 <int [48]>       
+    ##  3 32486 shark tank angel inv~ angel invest~                10 <int [48]>       
+    ##  4 10538 about y combinator    y combinator                 10 <int [48]>       
+    ##  5 13572 best product startups top startups                 10 <int [48]>       
+    ##  6 27328 consumer technology ~ tech startups                10 <int [48]>       
+    ##  7 27895 best tech startups 2~ best startup~               170 <int [48]>       
+    ##  8 49304 pre seed stage inves~ pre seed sta~                10 <int [48]>       
+    ##  9 18981 seed funding websites startup fund~                10 <int [48]>       
+    ## 10  9634 government funding s~ start up bus~                10 <int [48]>       
+    ## 11 14986 pest control startup~ start up cos~                10 <int [48]>       
+    ## 12 32188 sba angel investors   angel invest~                10 <int [48]>       
+    ## 13 57736 top hardware startups start up tech                20 <int [48]>       
+    ## 14 30221 looking for startup ~ startup capi~                10 <int [48]>       
+    ## 15 36455 most unique startup ~ start up com~                10 <int [48]>       
+    ## 16 21025 unsecured business s~ small busine~                10 <int [48]>       
+    ## 17 55451 failed venture capit~ venture capi~                10 <int [48]>       
+    ## 18 12577 profitable startup b~ start up ide~                10 <int [48]>       
+    ## 19 30804 startup ideas reddit  start up bus~               210 <int [48]>       
+    ## 20 10593 stripe atlas incorpo~ stripe atlas                 20 <int [48]>
 
 # STATS
 
-## Add months
+## Add months columns
 
 ``` r
-## NOTE: get the first entry for "past_months" e.g. c("DECEMBER - 2017" etc
-months_df <- tibble(month = ymd("2017-12-01") + months(1:48))
+months_df <- tibble(month = ymd("2018-01-01") + months(0:47))
 
-
-# sd_long <- search_data %>% unnest_longer(searches_past_months)
 
 sd_long <- search_data %>% unnest_longer(searches_past_months)
 
@@ -102,21 +110,20 @@ sd_monthly <- sd_long %>%
   mutate(
     month = rep(months_df$month, len = nrow(sd_long)),
     month_counter = rep(1:48, len = nrow(sd_long))
-  ) %>% # NOTE:len=nrow(.)
+  ) %>%
   mutate(year = year(month) + yday(month) / 365) %>%
   select(Keyword = keyword, seed, searches_past_months, avg_monthly_searches, month_counter, month, year)
-# mutate(scaled_vals=scale(value)) %>%
 ```
 
 ## data to csv
 
 ``` r
-sd_monthly %>% 
-  select(keyword=Keyword, seed, month, search_volume=searches_past_months) %>%
-  write_csv("startup_search_data.csv")
+# sd_monthly %>%
+#   select(keyword = Keyword, seed, month, search_volume = searches_past_months) %>%
+#   write_csv("startup_search_data.csv")
 ```
 
-## Rolling prep
+## 3m Rolling avg
 
 ``` r
 sd_month_filt <- sd_monthly %>%
@@ -136,6 +143,8 @@ rolling <- sd_month_filt %>%
 
 ## Lms
 
+to estimate avg monthly change
+
 ``` r
 models <- rolling %>% # mutate(search_volume =ifelse(search_volume <100, NA , search_volume) )
   group_by(Keyword) %>%
@@ -152,10 +161,10 @@ models <- rolling %>% # mutate(search_volume =ifelse(search_volume <100, NA , se
 by_term <- models %>%
   unnest(by_term) %>%
   select(Keyword, term, estimate)
+
 perf <- models %>%
   unnest(perf) %>%
   select(Keyword, r.squared)
-
 
 
 by_term_perf <- by_term %>%
@@ -211,6 +220,8 @@ by_term_perf_ln <- by_term_ln %>%
 
 ## Peaked
 
+when the trend had a peaked and then went downwards
+
 ``` r
 peaked <- rolling %>%
   dplyr::filter(roll_avg_round > 0) %>%
@@ -229,7 +240,7 @@ peaked <- rolling %>%
   select(Keyword, ratio)
 ```
 
-## JOINs
+## JOIN all
 
 ``` r
 # by_term_perf_ln
@@ -259,7 +270,8 @@ all_data <- kw_rsq_vol %>%
 
 ## visualise
 
-keywords with best R squared and positive coeff values
+keywords with best R squared and positive coeffiecient values ie search
+queries with consistent and positive pattern of growth
 
 ``` r
 selection <- all_data %>%
@@ -285,4 +297,4 @@ rolling %>%
 
     ## Warning: Removed 16 row(s) containing missing values (geom_path).
 
-![](startups-2022-analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](startups-2022-analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->

@@ -29,45 +29,22 @@ options(digits = 6)
 
 ```{r}
 search_data <- read_rds("startup_search_data.rds")
+
+
+search_data %>% sample_n(20)
 ```
 
-
-## data to csv 
-
-
-```{r}
-
-
-
-months_df <- tibble(month=ymd("2017-12-01")+ months(0:47))
-
-sd_long <- search_data %>% unnest_longer(searches_past_months) 
-
-
-sd_monthly <- sd_long %>% 
-  mutate(month=rep(months_df$month, len=nrow(sd_long)))
-
-sd_monthly %>% 
-  select(keyword, seed, month, search_volume=searches_past_months) %>%
-  write_csv("startup_search_data.csv")
-
-
-
-```
 
 
 # STATS
 
 
-## Add months
+## Add months columns
 
 ```{r}
 
-## NOTE: get the first entry for "past_months" e.g. c("DECEMBER - 2017" etc
-months_df <- tibble(month = ymd("2017-12-01") + months(1:48))
+months_df <- tibble(month = ymd("2018-01-01") + months(0:47))
 
-
-# sd_long <- search_data %>% unnest_longer(searches_past_months)
 
 sd_long <- search_data %>% unnest_longer(searches_past_months)
 
@@ -76,26 +53,22 @@ sd_monthly <- sd_long %>%
   mutate(
     month = rep(months_df$month, len = nrow(sd_long)),
     month_counter = rep(1:48, len = nrow(sd_long))
-  ) %>% # NOTE:len=nrow(.)
+  ) %>%
   mutate(year = year(month) + yday(month) / 365) %>%
   select(Keyword = keyword, seed, searches_past_months, avg_monthly_searches, month_counter, month, year)
-# mutate(scaled_vals=scale(value)) %>%
-
-
-
 ```
 
 
 ## data to csv
 
 ```{r}
-sd_monthly %>% 
-  select(keyword=Keyword, seed, month, search_volume=searches_past_months) %>%
-  write_csv("startup_search_data.csv")
+# sd_monthly %>%
+#   select(keyword = Keyword, seed, month, search_volume = searches_past_months) %>%
+#   write_csv("startup_search_data.csv")
 ```
 
 
-## Rolling prep
+## 3m Rolling avg
 
 ```{r}
 
@@ -116,6 +89,8 @@ rolling <- sd_month_filt %>%
 
 ## Lms
 
+to estimate avg monthly change
+
 ```{r}
 models <- rolling %>% # mutate(search_volume =ifelse(search_volume <100, NA , search_volume) )
   group_by(Keyword) %>%
@@ -132,10 +107,10 @@ models <- rolling %>% # mutate(search_volume =ifelse(search_volume <100, NA , se
 by_term <- models %>%
   unnest(by_term) %>%
   select(Keyword, term, estimate)
+
 perf <- models %>%
   unnest(perf) %>%
   select(Keyword, r.squared)
-
 
 
 by_term_perf <- by_term %>%
@@ -151,6 +126,7 @@ kw_rsq_vol <- by_term_perf %>%
 ```
 
 ## Natural log model
+
 to estimate growth rate
 
 ```{r}
@@ -181,6 +157,8 @@ by_term_perf_ln <- by_term_ln %>%
 
 ## Peaked
 
+when the trend had a peaked and then went downwards
+
 ```{r}
 
 peaked <- rolling %>%
@@ -200,7 +178,7 @@ peaked <- rolling %>%
   select(Keyword, ratio)
 ```
 
-## JOINs
+## JOIN all
 
 
 
@@ -228,7 +206,9 @@ all_data <- kw_rsq_vol %>%
 ```
 
 ## visualise 
-keywords with best R squared and positive coeff values
+
+keywords with best R squared and positive coeffiecient values 
+ie search queries with consistent and positive pattern of growth
 
 ```{r}
 
