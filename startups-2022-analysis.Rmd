@@ -26,9 +26,9 @@ library(ggthemes)
 
 source("gg-functions.R")
 
-#theme_set(theme_light())
+# theme_set(theme_light())
 
-#font =  "Roboto Condensed"
+# font =  "Roboto Condensed"
 
 
 
@@ -253,8 +253,6 @@ rolling %>%
 ```{r}
 
 rolling %>%
-  dplyr::filter(Keyword %in% selection) %>% 
-  plot_by_category(my_title ="", my_subtitle = "", time_col = "year")
-
+  dplyr::filter(Keyword %in% selection) %>%
+  plot_by_category(my_title = "", my_subtitle = "", time_col = "year")
 ```
-

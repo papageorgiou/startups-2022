@@ -23,6 +23,8 @@ It highlights the various fast growing trends and rising stars in the most inter
 
 -   The data collected for the startups project is available in this repo in a reduced size format format. Follow the code to convert to csv (it's over 100MB and couldn't be included in this github repo)
 
+- time series data in csv now is available:  https://drive.google.com/file/d/1JtdLuuVEY3zrmpfpjn3NnNdjTarc405D/view?usp=sharing
+
 
 **About the Analysis**
 
