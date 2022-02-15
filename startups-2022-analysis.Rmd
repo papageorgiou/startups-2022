@@ -1,5 +1,5 @@
 ---
-title: "Analysis"
+title: "Search trends analysis"
 author: "Alex Papageorgiou"
 date: "1/27/2022"
 output: github_document
@@ -9,14 +9,26 @@ output: github_document
 
 # Setup
 
-```{r}
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
 library(readr)
 library(lubridate)
 library(textstem)
 library(reticulate)
 library(zoo)
 library(broom)
-library(tidyverse)
+library(scales)
+library(ggrepel)
+library(gghighlight)
+library(ggthemes)
+
+
+
+source("gg-functions.R")
+
+#theme_set(theme_light())
+
+#font =  "Roboto Condensed"
 
 
 
@@ -24,10 +36,15 @@ options(scipen = 999)
 options(digits = 6)
 ```
 
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(extrafont)
+loadfonts(device = "win")
+```
 
-# No lemmas version
 
-```{r}
+# Data
+
+```{r paged.print=TRUE}
 search_data <- read_rds("startup_search_data.rds")
 
 
@@ -228,3 +245,16 @@ rolling %>%
   theme(legend.position = "none", strip.text = element_text(size = 10)) +
   ylab("monthly_search_volume_USA")
 ```
+
+
+## style plot for publication
+
+
+```{r}
+
+rolling %>%
+  dplyr::filter(Keyword %in% selection) %>% 
+  plot_by_category(my_title ="", my_subtitle = "", time_col = "year")
+
+```
+

@@ -1,68 +1,11 @@
-Analysis
+Search trends analysis
 ================
 Alex Papageorgiou
 1/27/2022
 
 # Setup
 
-``` r
-library(readr)
-library(lubridate)
-```
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     date, intersect, setdiff, union
-
-``` r
-library(textstem)
-```
-
-    ## Loading required package: koRpus.lang.en
-
-    ## Loading required package: koRpus
-
-    ## Loading required package: sylly
-
-    ## For information on available language packages for 'koRpus', run
-    ## 
-    ##   available.koRpus.lang()
-    ## 
-    ## and see ?install.koRpus.lang()
-
-    ## 
-    ## Attaching package: 'koRpus'
-
-    ## The following object is masked from 'package:readr':
-    ## 
-    ##     tokenize
-
-``` r
-library(reticulate)
-library(zoo)
-```
-
-    ## 
-    ## Attaching package: 'zoo'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     as.Date, as.Date.numeric
-
-``` r
-library(broom)
-library(tidyverse)
-
-
-
-options(scipen = 999)
-options(digits = 6)
-```
-
-# No lemmas version
+# Data
 
 ``` r
 search_data <- read_rds("startup_search_data.rds")
@@ -72,28 +15,28 @@ search_data %>% sample_n(20)
 ```
 
     ## # A tibble: 20 x 5
-    ##    kw_id keyword               seed          avg_monthly_sear~ searches_past_mo~
-    ##    <int> <chr>                 <chr>                     <dbl> <list>           
-    ##  1 14637 start up cost for cl~ start up cos~                10 <int [48]>       
-    ##  2 11878 most unique startup ~ unique start~                10 <int [48]>       
-    ##  3 32486 shark tank angel inv~ angel invest~                10 <int [48]>       
-    ##  4 10538 about y combinator    y combinator                 10 <int [48]>       
-    ##  5 13572 best product startups top startups                 10 <int [48]>       
-    ##  6 27328 consumer technology ~ tech startups                10 <int [48]>       
-    ##  7 27895 best tech startups 2~ best startup~               170 <int [48]>       
-    ##  8 49304 pre seed stage inves~ pre seed sta~                10 <int [48]>       
-    ##  9 18981 seed funding websites startup fund~                10 <int [48]>       
-    ## 10  9634 government funding s~ start up bus~                10 <int [48]>       
-    ## 11 14986 pest control startup~ start up cos~                10 <int [48]>       
-    ## 12 32188 sba angel investors   angel invest~                10 <int [48]>       
-    ## 13 57736 top hardware startups start up tech                20 <int [48]>       
-    ## 14 30221 looking for startup ~ startup capi~                10 <int [48]>       
-    ## 15 36455 most unique startup ~ start up com~                10 <int [48]>       
-    ## 16 21025 unsecured business s~ small busine~                10 <int [48]>       
-    ## 17 55451 failed venture capit~ venture capi~                10 <int [48]>       
-    ## 18 12577 profitable startup b~ start up ide~                10 <int [48]>       
-    ## 19 30804 startup ideas reddit  start up bus~               210 <int [48]>       
-    ## 20 10593 stripe atlas incorpo~ stripe atlas                 20 <int [48]>
+    ##    kw_id keyword                       seed    avg_monthly_sea~ searches_past_m~
+    ##    <int> <chr>                         <chr>              <dbl> <list>          
+    ##  1 36997 find angel investors near me  find a~               20 <int [48]>      
+    ##  2 29392 best low start up businesses  best s~               20 <int [48]>      
+    ##  3 27052 deep technology startups      tech s~               10 <int [48]>      
+    ##  4 31955 seed angel                    angel ~               90 <int [48]>      
+    ##  5 21999 start up loans for women      startu~               30 <int [48]>      
+    ##  6  7609 best startups to work         work a~               10 <int [48]>      
+    ##  7 26460 5 minute pitch deck           startu~               20 <int [48]>      
+    ##  8 10894 grants for fintech startups   busine~               10 <int [48]>      
+    ##  9  9296 the seed stage                seed s~               10 <int [48]>      
+    ## 10 31447 any startup idea              start ~               10 <int [48]>      
+    ## 11 23450 best startup ideas 2022       startu~               10 <int [48]>      
+    ## 12 31071 startup ideas for it students start ~               10 <int [48]>      
+    ## 13  2136 ksidc seed fund               seed f~               10 <int [48]>      
+    ## 14 47852 tech startup financial model  start ~               10 <int [48]>      
+    ## 15 15748 unicorn investment meaning    unicor~               10 <int [48]>      
+    ## 16 56987 algolia startup               startu~               10 <int [48]>      
+    ## 17 13457 best media startups           top st~               10 <int [48]>      
+    ## 18 37652 firehouse subs start up cost  busine~               10 <int [48]>      
+    ## 19  3640 atomic fintech                fintec~              110 <int [48]>      
+    ## 20 36051 online store startup costs    start ~               10 <int [48]>
 
 # STATS
 
@@ -297,4 +240,20 @@ rolling %>%
 
     ## Warning: Removed 16 row(s) containing missing values (geom_path).
 
-![](startups-2022-analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](startups-2022-analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+## style plot for publication
+
+``` r
+rolling %>%
+  dplyr::filter(Keyword %in% selection) %>% 
+  plot_by_category(my_title ="", my_subtitle = "", time_col = "year")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+    ## Warning: Removed 16 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 16 row(s) containing missing values (geom_path).
+
+![](startups-2022-analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
