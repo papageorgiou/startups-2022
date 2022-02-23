@@ -1,5 +1,7 @@
 Startups 2022: Search Intelligence Insights
 
+![](startup_universe.png)
+
 2021 was a record breaking year for the startup economy.
 
 IPOs, venture capital and number of new unicorns created hit record numbers. And it's not just in the USA. Europe and MENA regions had an exceptional 2021 too. UK, Israel (impressive!), Switzerland, Greece (finally), UAE but also Brazil, Canada, Australia and S.Korea.
