@@ -1,6 +1,6 @@
 Startups 2022: Search Intelligence Insights
 
-![](search_universe_startups.png)
+![](patchwork3_all2.png)
 
 2021 was a record breaking year for the startup economy.
 
